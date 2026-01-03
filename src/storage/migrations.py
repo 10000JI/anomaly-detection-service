@@ -51,16 +51,17 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS user_profiles (
-                user_id VARCHAR(50) PRIMARY KEY,
-                user_segment VARCHAR(20),
-                signup_date DATE,
-                total_purchases INT DEFAULT 0,
-                total_spent DECIMAL(12,2) DEFAULT 0,
-                favorite_categories JSON,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                user_id VARCHAR(50) PRIMARY KEY COMMENT '사용자 고유 ID (user-00001 ~ user-00100)',
+                user_segment VARCHAR(20) COMMENT '사용자 세그먼트 (VIP/Regular/New)',
+                signup_date DATE COMMENT '가입 날짜',
+                total_purchases INT DEFAULT 0 COMMENT '총 구매 횟수',
+                total_spent DECIMAL(12,2) DEFAULT 0 COMMENT '총 구매 금액',
+                favorite_categories JSON COMMENT '선호 장르 목록 (JSON 배열)',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '레코드 수정 시간',
                 INDEX idx_segment (user_segment)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='사용자 프로필 및 세그먼트 정보 - VIP/Regular/New 사용자 관리'
             """
             
             self.client.execute_query(create_table_sql)
@@ -91,20 +92,21 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS contents (
-                content_id VARCHAR(50) PRIMARY KEY,
-                title VARCHAR(255) NOT NULL,
-                content_type ENUM('movie', 'series', 'documentary') NOT NULL,
-                genre VARCHAR(100),
-                sub_genre VARCHAR(100),
-                duration_minutes INT,
-                release_year INT,
-                rating FLOAT,
-                review_count INT DEFAULT 0,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                content_id VARCHAR(50) PRIMARY KEY COMMENT '콘텐츠 고유 ID (movie-xxxxx/series-xxxxx/doc-xxxxx)',
+                title VARCHAR(255) NOT NULL COMMENT '콘텐츠 제목',
+                content_type ENUM('movie', 'series', 'documentary') NOT NULL COMMENT '콘텐츠 유형 (영화/드라마/다큐멘터리)',
+                genre VARCHAR(100) COMMENT '주 장르',
+                sub_genre VARCHAR(100) COMMENT '서브 장르',
+                duration_minutes INT COMMENT '재생 시간 (분)',
+                release_year INT COMMENT '출시 연도',
+                rating FLOAT COMMENT '평균 평점 (1.0-5.0)',
+                review_count INT DEFAULT 0 COMMENT '리뷰 개수',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
                 INDEX idx_genre (genre),
                 INDEX idx_type (content_type),
                 INDEX idx_rating (rating)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='콘텐츠 메타데이터 - 영화/드라마/다큐멘터리 정보'
             """
             
             self.client.execute_query(create_table_sql)
@@ -135,19 +137,20 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS user_events (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                user_id VARCHAR(50) NOT NULL,
-                session_id VARCHAR(100),
-                event_type ENUM('click', 'watch', 'watchlist', 'watch_complete', 'rating') NOT NULL,
-                content_id VARCHAR(50),
-                watched_minutes INT,
-                timestamp DATETIME NOT NULL,
-                metadata JSON,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '이벤트 고유 ID',
+                user_id VARCHAR(50) NOT NULL COMMENT '사용자 ID (FK: user_profiles)',
+                session_id VARCHAR(100) COMMENT '세션 ID (3분 윈도우)',
+                event_type ENUM('click', 'watch', 'watchlist', 'watch_complete', 'rating') NOT NULL COMMENT '이벤트 타입',
+                content_id VARCHAR(50) COMMENT '콘텐츠 ID (FK: contents)',
+                watched_minutes INT COMMENT '시청 시간 (분)',
+                timestamp DATETIME NOT NULL COMMENT '이벤트 발생 시간',
+                metadata JSON COMMENT '추가 메타데이터 (디바이스, 화질, referrer 등)',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
                 INDEX idx_user_timestamp (user_id, timestamp),
                 INDEX idx_content (content_id),
                 INDEX idx_session (session_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='사용자 행동 이벤트 히스토리 - Kafka로부터 수집된 실시간 이벤트'
             """
             
             self.client.execute_query(create_table_sql)
@@ -178,19 +181,20 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS user_sessions (
-                session_id VARCHAR(100) PRIMARY KEY,
-                user_id VARCHAR(50) NOT NULL,
-                start_time DATETIME NOT NULL,
-                end_time DATETIME,
-                event_count INT DEFAULT 0,
-                browsed_contents JSON,
-                watched_contents JSON,
-                completed_contents JSON,
-                total_watch_minutes INT DEFAULT 0,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                session_id VARCHAR(100) PRIMARY KEY COMMENT '세션 고유 ID',
+                user_id VARCHAR(50) NOT NULL COMMENT '사용자 ID (FK: user_profiles)',
+                start_time DATETIME NOT NULL COMMENT '세션 시작 시간',
+                end_time DATETIME COMMENT '세션 종료 시간',
+                event_count INT DEFAULT 0 COMMENT '세션 내 이벤트 수',
+                browsed_contents JSON COMMENT '탐색한 콘텐츠 목록 (JSON 배열)',
+                watched_contents JSON COMMENT '시청한 콘텐츠 목록 (JSON 배열)',
+                completed_contents JSON COMMENT '완료한 콘텐츠 목록 (JSON 배열)',
+                total_watch_minutes INT DEFAULT 0 COMMENT '총 시청 시간 (분)',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '레코드 수정 시간',
                 INDEX idx_user_start (user_id, start_time)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='사용자 세션 분석 결과 - PySpark 3분 윈도우 분석'
             """
             
             self.client.execute_query(create_table_sql)
@@ -221,18 +225,19 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS recommendations (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                user_id VARCHAR(50) NOT NULL,
-                content_id VARCHAR(50) NOT NULL,
-                recommendation_score FLOAT,
-                algorithm VARCHAR(50),
-                ab_test_group VARCHAR(20),
-                is_clicked BOOLEAN DEFAULT FALSE,
-                is_watched BOOLEAN DEFAULT FALSE,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '추천 고유 ID',
+                user_id VARCHAR(50) NOT NULL COMMENT '사용자 ID (FK: user_profiles)',
+                content_id VARCHAR(50) NOT NULL COMMENT '추천된 콘텐츠 ID (FK: contents)',
+                recommendation_score FLOAT COMMENT '추천 점수 (0.0-1.0)',
+                algorithm VARCHAR(50) COMMENT '사용 알고리즘 (collaborative_filtering/session_based)',
+                ab_test_group VARCHAR(20) COMMENT 'A/B 테스트 그룹 (algorithm_v1/algorithm_v2)',
+                is_clicked BOOLEAN DEFAULT FALSE COMMENT '클릭 여부 (CTR 추적)',
+                is_watched BOOLEAN DEFAULT FALSE COMMENT '시청 여부 (완료율 추적)',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '추천 생성 시간',
                 INDEX idx_user_created (user_id, created_at),
                 INDEX idx_algorithm (algorithm)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='개인화 추천 결과 - 협업 필터링 및 세션 기반 추천'
             """
             
             self.client.execute_query(create_table_sql)
@@ -263,15 +268,16 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS ab_test_groups (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                group_name VARCHAR(50) NOT NULL UNIQUE,
-                description TEXT,
-                algorithm VARCHAR(50),
-                config JSON,
-                is_active BOOLEAN DEFAULT TRUE,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                id INT AUTO_INCREMENT PRIMARY KEY COMMENT '그룹 ID',
+                group_name VARCHAR(50) NOT NULL UNIQUE COMMENT '그룹명 (algorithm_v1/algorithm_v2)',
+                description TEXT COMMENT '그룹 설명',
+                algorithm VARCHAR(50) COMMENT '사용 알고리즘',
+                config JSON COMMENT '알고리즘 설정 (하이퍼파라미터 등)',
+                is_active BOOLEAN DEFAULT TRUE COMMENT '활성화 여부',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '생성 시간',
                 INDEX idx_active (is_active)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='A/B 테스트 그룹 정의 - 알고리즘 버전 관리'
             """
             
             self.client.execute_query(create_table_sql)
@@ -302,15 +308,16 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS ab_test_metrics (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                test_group VARCHAR(20) NOT NULL,
-                metric_name VARCHAR(100),
-                metric_value FLOAT,
-                sample_size INT,
-                timestamp DATETIME NOT NULL,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                id INT AUTO_INCREMENT PRIMARY KEY COMMENT '지표 ID',
+                test_group VARCHAR(20) NOT NULL COMMENT '테스트 그룹명',
+                metric_name VARCHAR(100) COMMENT '지표명 (click_rate/watch_rate/precision@10)',
+                metric_value FLOAT COMMENT '지표 값',
+                sample_size INT COMMENT '샘플 크기',
+                timestamp DATETIME NOT NULL COMMENT '측정 시간',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
                 INDEX idx_group_timestamp (test_group, timestamp)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+            COMMENT='A/B 테스트 성능 지표 - 그룹별 시계열 성능 데이터'
             """
             
             self.client.execute_query(create_table_sql)
