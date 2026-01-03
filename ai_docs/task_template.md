@@ -28,10 +28,10 @@
   - Bootstrap Servers: `192.168.150.115:9092,192.168.150.120:9092,192.168.150.125:9092`
   - Message Format: Pure JSON (No Schema Registry)
 - **Database:** MySQL (External Server)
-  - Host: `192.168.150.110:3306`
-  - User: `didim`
-  - Password: `fpemdnemzpdl123$`
-  - Database: `cursor_practice`
+  - Host: `your_mysql_host:3306`
+  - User: `your_mysql_user`
+  - Password: `your_secure_password` (`.env`에서 관리)
+  - Database: `your_database_name`
 - **Cache:** Redis (External Server)
   - Host: `192.168.150.110:6379`
   - Purpose: 실시간 추천 결과 캐싱

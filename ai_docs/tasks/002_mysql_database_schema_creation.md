@@ -36,9 +36,9 @@
 ### MySQL 연결 정보
 - **Host:** 192.168.150.110
 - **Port:** 3306
-- **Database:** cursor_practice
-- **User:** didim
-- **Password:** fpemdnemzpdl123$ (`.env`에서 관리)
+- **Database:** your_database_name
+- **User:** your_mysql_user
+- **Password:** your_secure_password (`.env`에서 관리)
 
 ---
 

@@ -28,10 +28,10 @@
   - Bootstrap Servers: `192.168.150.115:9092,192.168.150.120:9092,192.168.150.125:9092`
   - Message Format: Pure JSON (No Schema Registry)
 - **Database:** MySQL (External Server)
-  - Host: `192.168.150.110:3306`
-  - User: `didim`
-  - Password: `fpemdnemzpdl123$`
-  - Database: `cursor_practice`
+  - Host: `your_mysql_host:3306`
+  - User: `your_mysql_user`
+  - Password: `your_secure_password` (`.env`에서 관리)
+  - Database: `your_database_name`
 - **Cache:** Redis (External Server)
   - Host: `192.168.150.110:6379`
   - Purpose: 실시간 추천 결과 캐싱
@@ -473,20 +473,20 @@ KAFKA_CONSUMER_GROUP=recommendation-engine-group
 ### MySQL Configuration
 ```python
 # .env 파일
-MYSQL_HOST=192.168.150.110
+MYSQL_HOST=your_mysql_host
 MYSQL_PORT=3306
-MYSQL_USER=didim
-MYSQL_PASSWORD=fpemdnemzpdl123$
-MYSQL_DATABASE=cursor_practice
+MYSQL_USER=your_mysql_user
+MYSQL_PASSWORD=your_secure_password
+MYSQL_DATABASE=your_database_name
 ```
 
 ### Redis Configuration
 ```python
 # .env 파일
-REDIS_HOST=192.168.150.110
+REDIS_HOST=your_redis_host
 REDIS_PORT=6379
 REDIS_DB=0
-REDIS_PASSWORD=
+REDIS_PASSWORD=your_redis_password_if_needed
 REDIS_TTL=600
 ```
 

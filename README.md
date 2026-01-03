@@ -289,21 +289,21 @@ KAFKA_ENABLE_AUTO_COMMIT=false
 #### MySQL 설정
 
 ```bash
-MYSQL_HOST=192.168.150.110
+MYSQL_HOST=your_mysql_host
 MYSQL_PORT=3306
-MYSQL_USER=didim
-MYSQL_PASSWORD=fpemdnemzpdl123$
-MYSQL_DATABASE=cursor_practice
+MYSQL_USER=your_mysql_user
+MYSQL_PASSWORD=your_secure_password
+MYSQL_DATABASE=your_database_name
 MYSQL_POOL_SIZE=5
 ```
 
 #### Redis 설정
 
 ```bash
-REDIS_HOST=192.168.150.110
+REDIS_HOST=your_redis_host
 REDIS_PORT=6379
 REDIS_DB=0
-REDIS_PASSWORD=
+REDIS_PASSWORD=your_redis_password_if_needed
 REDIS_TTL=600
 ```
 
