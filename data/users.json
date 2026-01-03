@@ -1,0 +1,802 @@
+[
+  {
+    "user_id": "user-00001",
+    "user_segment": "VIP",
+    "signup_date": "2023-08-02",
+    "total_purchases": 44,
+    "total_spent": 1100.04,
+    "favorite_categories": "[\"SF\", \"역사\", \"드라마\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00002",
+    "user_segment": "VIP",
+    "signup_date": "2023-10-17",
+    "total_purchases": 99,
+    "total_spent": 1347.76,
+    "favorite_categories": "[\"액션\", \"역사\", \"코미디\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00003",
+    "user_segment": "VIP",
+    "signup_date": "2021-04-21",
+    "total_purchases": 94,
+    "total_spent": 3408.07,
+    "favorite_categories": "[\"SF\", \"자연\", \"애니메이션\", \"스릴러\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00004",
+    "user_segment": "VIP",
+    "signup_date": "2022-07-08",
+    "total_purchases": 65,
+    "total_spent": 4237.72,
+    "favorite_categories": "[\"드라마\", \"스릴러\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00005",
+    "user_segment": "VIP",
+    "signup_date": "2021-07-23",
+    "total_purchases": 49,
+    "total_spent": 1861.26,
+    "favorite_categories": "[\"코미디\", \"역사\", \"스릴러\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00006",
+    "user_segment": "VIP",
+    "signup_date": "2022-01-05",
+    "total_purchases": 74,
+    "total_spent": 3414.9,
+    "favorite_categories": "[\"역사\", \"판타지\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00007",
+    "user_segment": "VIP",
+    "signup_date": "2020-09-12",
+    "total_purchases": 78,
+    "total_spent": 1315.2,
+    "favorite_categories": "[\"자연\", \"범죄\", \"로맨스\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00008",
+    "user_segment": "VIP",
+    "signup_date": "2023-12-13",
+    "total_purchases": 38,
+    "total_spent": 1183.3,
+    "favorite_categories": "[\"공포\", \"코미디\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00009",
+    "user_segment": "VIP",
+    "signup_date": "2020-07-25",
+    "total_purchases": 78,
+    "total_spent": 2111.89,
+    "favorite_categories": "[\"로맨스\", \"드라마\", \"역사\", \"범죄\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00010",
+    "user_segment": "VIP",
+    "signup_date": "2023-10-04",
+    "total_purchases": 64,
+    "total_spent": 3807.28,
+    "favorite_categories": "[\"자연\", \"코미디\", \"범죄\", \"드라마\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00011",
+    "user_segment": "VIP",
+    "signup_date": "2020-11-30",
+    "total_purchases": 89,
+    "total_spent": 2517.82,
+    "favorite_categories": "[\"역사\", \"애니메이션\", \"SF\", \"로맨스\", \"액션\"]"
+  },
+  {
+    "user_id": "user-00012",
+    "user_segment": "VIP",
+    "signup_date": "2021-04-14",
+    "total_purchases": 34,
+    "total_spent": 4220.18,
+    "favorite_categories": "[\"공포\", \"코미디\", \"SF\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00013",
+    "user_segment": "VIP",
+    "signup_date": "2021-03-11",
+    "total_purchases": 93,
+    "total_spent": 2582.53,
+    "favorite_categories": "[\"판타지\", \"드라마\", \"공포\", \"자연\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00014",
+    "user_segment": "VIP",
+    "signup_date": "2023-02-23",
+    "total_purchases": 98,
+    "total_spent": 2050.97,
+    "favorite_categories": "[\"스릴러\", \"범죄\", \"역사\", \"로맨스\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00015",
+    "user_segment": "VIP",
+    "signup_date": "2020-10-10",
+    "total_purchases": 95,
+    "total_spent": 2974.06,
+    "favorite_categories": "[\"코미디\", \"드라마\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00016",
+    "user_segment": "VIP",
+    "signup_date": "2023-10-25",
+    "total_purchases": 84,
+    "total_spent": 3385.64,
+    "favorite_categories": "[\"스릴러\", \"범죄\", \"판타지\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00017",
+    "user_segment": "VIP",
+    "signup_date": "2021-05-29",
+    "total_purchases": 100,
+    "total_spent": 4443.12,
+    "favorite_categories": "[\"자연\", \"코미디\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00018",
+    "user_segment": "VIP",
+    "signup_date": "2021-06-30",
+    "total_purchases": 73,
+    "total_spent": 1446.21,
+    "favorite_categories": "[\"드라마\", \"판타지\", \"액션\", \"공포\"]"
+  },
+  {
+    "user_id": "user-00019",
+    "user_segment": "VIP",
+    "signup_date": "2022-10-22",
+    "total_purchases": 52,
+    "total_spent": 3030.73,
+    "favorite_categories": "[\"자연\", \"공포\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00020",
+    "user_segment": "VIP",
+    "signup_date": "2023-06-01",
+    "total_purchases": 55,
+    "total_spent": 1611.36,
+    "favorite_categories": "[\"애니메이션\", \"역사\", \"액션\"]"
+  },
+  {
+    "user_id": "user-00021",
+    "user_segment": "Regular",
+    "signup_date": "2023-10-26",
+    "total_purchases": 20,
+    "total_spent": 117.53,
+    "favorite_categories": "[\"공포\", \"SF\", \"액션\"]"
+  },
+  {
+    "user_id": "user-00022",
+    "user_segment": "Regular",
+    "signup_date": "2023-05-09",
+    "total_purchases": 23,
+    "total_spent": 952.25,
+    "favorite_categories": "[\"역사\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00023",
+    "user_segment": "Regular",
+    "signup_date": "2022-05-22",
+    "total_purchases": 29,
+    "total_spent": 579.44,
+    "favorite_categories": "[\"드라마\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00024",
+    "user_segment": "Regular",
+    "signup_date": "2024-08-31",
+    "total_purchases": 22,
+    "total_spent": 248.61,
+    "favorite_categories": "[\"SF\", \"애니메이션\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00025",
+    "user_segment": "Regular",
+    "signup_date": "2023-10-01",
+    "total_purchases": 17,
+    "total_spent": 995.63,
+    "favorite_categories": "[\"판타지\", \"애니메이션\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00026",
+    "user_segment": "Regular",
+    "signup_date": "2022-09-05",
+    "total_purchases": 12,
+    "total_spent": 302.23,
+    "favorite_categories": "[\"액션\", \"범죄\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00027",
+    "user_segment": "Regular",
+    "signup_date": "2023-04-17",
+    "total_purchases": 23,
+    "total_spent": 298.2,
+    "favorite_categories": "[\"역사\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00028",
+    "user_segment": "Regular",
+    "signup_date": "2022-05-01",
+    "total_purchases": 12,
+    "total_spent": 160.66,
+    "favorite_categories": "[\"로맨스\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00029",
+    "user_segment": "Regular",
+    "signup_date": "2024-11-18",
+    "total_purchases": 12,
+    "total_spent": 350.63,
+    "favorite_categories": "[\"SF\", \"애니메이션\", \"드라마\"]"
+  },
+  {
+    "user_id": "user-00030",
+    "user_segment": "Regular",
+    "signup_date": "2024-08-26",
+    "total_purchases": 12,
+    "total_spent": 806.16,
+    "favorite_categories": "[\"SF\", \"코미디\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00031",
+    "user_segment": "Regular",
+    "signup_date": "2024-06-01",
+    "total_purchases": 16,
+    "total_spent": 481.22,
+    "favorite_categories": "[\"역사\", \"액션\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00032",
+    "user_segment": "Regular",
+    "signup_date": "2022-05-05",
+    "total_purchases": 17,
+    "total_spent": 755.39,
+    "favorite_categories": "[\"SF\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00033",
+    "user_segment": "Regular",
+    "signup_date": "2023-01-25",
+    "total_purchases": 22,
+    "total_spent": 503.75,
+    "favorite_categories": "[\"드라마\", \"공포\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00034",
+    "user_segment": "Regular",
+    "signup_date": "2023-05-27",
+    "total_purchases": 7,
+    "total_spent": 498.82,
+    "favorite_categories": "[\"액션\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00035",
+    "user_segment": "Regular",
+    "signup_date": "2022-01-31",
+    "total_purchases": 7,
+    "total_spent": 933.73,
+    "favorite_categories": "[\"드라마\", \"스릴러\"]"
+  },
+  {
+    "user_id": "user-00036",
+    "user_segment": "Regular",
+    "signup_date": "2024-09-21",
+    "total_purchases": 20,
+    "total_spent": 292.37,
+    "favorite_categories": "[\"액션\", \"드라마\", \"스릴러\"]"
+  },
+  {
+    "user_id": "user-00037",
+    "user_segment": "Regular",
+    "signup_date": "2022-01-05",
+    "total_purchases": 17,
+    "total_spent": 338.68,
+    "favorite_categories": "[\"공포\", \"스릴러\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00038",
+    "user_segment": "Regular",
+    "signup_date": "2024-09-23",
+    "total_purchases": 9,
+    "total_spent": 270.91,
+    "favorite_categories": "[\"액션\", \"범죄\"]"
+  },
+  {
+    "user_id": "user-00039",
+    "user_segment": "Regular",
+    "signup_date": "2022-05-05",
+    "total_purchases": 28,
+    "total_spent": 382.24,
+    "favorite_categories": "[\"범죄\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00040",
+    "user_segment": "Regular",
+    "signup_date": "2024-10-26",
+    "total_purchases": 21,
+    "total_spent": 241.69,
+    "favorite_categories": "[\"드라마\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00041",
+    "user_segment": "Regular",
+    "signup_date": "2022-05-20",
+    "total_purchases": 26,
+    "total_spent": 875.64,
+    "favorite_categories": "[\"코미디\", \"범죄\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00042",
+    "user_segment": "Regular",
+    "signup_date": "2022-03-23",
+    "total_purchases": 24,
+    "total_spent": 173.79,
+    "favorite_categories": "[\"공포\", \"SF\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00043",
+    "user_segment": "Regular",
+    "signup_date": "2023-05-04",
+    "total_purchases": 13,
+    "total_spent": 456.21,
+    "favorite_categories": "[\"판타지\", \"로맨스\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00044",
+    "user_segment": "Regular",
+    "signup_date": "2022-01-20",
+    "total_purchases": 19,
+    "total_spent": 659.04,
+    "favorite_categories": "[\"코미디\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00045",
+    "user_segment": "Regular",
+    "signup_date": "2023-03-13",
+    "total_purchases": 21,
+    "total_spent": 338.68,
+    "favorite_categories": "[\"코미디\", \"SF\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00046",
+    "user_segment": "Regular",
+    "signup_date": "2023-08-07",
+    "total_purchases": 10,
+    "total_spent": 494.37,
+    "favorite_categories": "[\"범죄\", \"자연\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00047",
+    "user_segment": "Regular",
+    "signup_date": "2022-01-17",
+    "total_purchases": 26,
+    "total_spent": 835.39,
+    "favorite_categories": "[\"자연\", \"코미디\", \"드라마\"]"
+  },
+  {
+    "user_id": "user-00048",
+    "user_segment": "Regular",
+    "signup_date": "2023-06-26",
+    "total_purchases": 8,
+    "total_spent": 900.74,
+    "favorite_categories": "[\"공포\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00049",
+    "user_segment": "Regular",
+    "signup_date": "2023-03-08",
+    "total_purchases": 27,
+    "total_spent": 408.59,
+    "favorite_categories": "[\"애니메이션\", \"판타지\", \"공포\"]"
+  },
+  {
+    "user_id": "user-00050",
+    "user_segment": "Regular",
+    "signup_date": "2022-04-15",
+    "total_purchases": 7,
+    "total_spent": 670.86,
+    "favorite_categories": "[\"액션\", \"역사\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00051",
+    "user_segment": "Regular",
+    "signup_date": "2022-09-25",
+    "total_purchases": 25,
+    "total_spent": 981.82,
+    "favorite_categories": "[\"역사\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00052",
+    "user_segment": "Regular",
+    "signup_date": "2024-05-25",
+    "total_purchases": 22,
+    "total_spent": 108.7,
+    "favorite_categories": "[\"역사\", \"드라마\"]"
+  },
+  {
+    "user_id": "user-00053",
+    "user_segment": "Regular",
+    "signup_date": "2022-03-15",
+    "total_purchases": 16,
+    "total_spent": 624.26,
+    "favorite_categories": "[\"스릴러\", \"드라마\"]"
+  },
+  {
+    "user_id": "user-00054",
+    "user_segment": "Regular",
+    "signup_date": "2022-03-27",
+    "total_purchases": 14,
+    "total_spent": 428.19,
+    "favorite_categories": "[\"로맨스\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00055",
+    "user_segment": "Regular",
+    "signup_date": "2023-05-27",
+    "total_purchases": 26,
+    "total_spent": 192.51,
+    "favorite_categories": "[\"범죄\", \"드라마\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00056",
+    "user_segment": "Regular",
+    "signup_date": "2022-11-29",
+    "total_purchases": 30,
+    "total_spent": 829.69,
+    "favorite_categories": "[\"액션\", \"드라마\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00057",
+    "user_segment": "Regular",
+    "signup_date": "2024-04-23",
+    "total_purchases": 30,
+    "total_spent": 702.92,
+    "favorite_categories": "[\"공포\", \"드라마\"]"
+  },
+  {
+    "user_id": "user-00058",
+    "user_segment": "Regular",
+    "signup_date": "2022-08-10",
+    "total_purchases": 17,
+    "total_spent": 884.95,
+    "favorite_categories": "[\"SF\", \"역사\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00059",
+    "user_segment": "Regular",
+    "signup_date": "2023-12-18",
+    "total_purchases": 14,
+    "total_spent": 838.48,
+    "favorite_categories": "[\"SF\", \"액션\"]"
+  },
+  {
+    "user_id": "user-00060",
+    "user_segment": "Regular",
+    "signup_date": "2023-01-31",
+    "total_purchases": 17,
+    "total_spent": 395.44,
+    "favorite_categories": "[\"공포\", \"로맨스\"]"
+  },
+  {
+    "user_id": "user-00061",
+    "user_segment": "Regular",
+    "signup_date": "2024-11-09",
+    "total_purchases": 17,
+    "total_spent": 711.57,
+    "favorite_categories": "[\"액션\", \"코미디\", \"공포\"]"
+  },
+  {
+    "user_id": "user-00062",
+    "user_segment": "Regular",
+    "signup_date": "2023-01-01",
+    "total_purchases": 23,
+    "total_spent": 966.28,
+    "favorite_categories": "[\"액션\", \"코미디\", \"범죄\"]"
+  },
+  {
+    "user_id": "user-00063",
+    "user_segment": "Regular",
+    "signup_date": "2024-06-08",
+    "total_purchases": 16,
+    "total_spent": 755.69,
+    "favorite_categories": "[\"스릴러\", \"범죄\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00064",
+    "user_segment": "Regular",
+    "signup_date": "2022-08-25",
+    "total_purchases": 17,
+    "total_spent": 909.55,
+    "favorite_categories": "[\"공포\", \"액션\"]"
+  },
+  {
+    "user_id": "user-00065",
+    "user_segment": "Regular",
+    "signup_date": "2024-06-12",
+    "total_purchases": 5,
+    "total_spent": 567.93,
+    "favorite_categories": "[\"로맨스\", \"스릴러\"]"
+  },
+  {
+    "user_id": "user-00066",
+    "user_segment": "Regular",
+    "signup_date": "2022-05-24",
+    "total_purchases": 26,
+    "total_spent": 928.69,
+    "favorite_categories": "[\"자연\", \"코미디\", \"공포\"]"
+  },
+  {
+    "user_id": "user-00067",
+    "user_segment": "Regular",
+    "signup_date": "2024-11-04",
+    "total_purchases": 14,
+    "total_spent": 700.2,
+    "favorite_categories": "[\"스릴러\", \"공포\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00068",
+    "user_segment": "Regular",
+    "signup_date": "2022-09-18",
+    "total_purchases": 11,
+    "total_spent": 478.4,
+    "favorite_categories": "[\"자연\", \"드라마\", \"범죄\"]"
+  },
+  {
+    "user_id": "user-00069",
+    "user_segment": "Regular",
+    "signup_date": "2023-09-09",
+    "total_purchases": 17,
+    "total_spent": 593.14,
+    "favorite_categories": "[\"공포\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00070",
+    "user_segment": "Regular",
+    "signup_date": "2023-03-07",
+    "total_purchases": 18,
+    "total_spent": 807.18,
+    "favorite_categories": "[\"판타지\", \"역사\", \"자연\"]"
+  },
+  {
+    "user_id": "user-00071",
+    "user_segment": "New",
+    "signup_date": "2025-11-22",
+    "total_purchases": 1,
+    "total_spent": 51.12,
+    "favorite_categories": "[\"자연\"]"
+  },
+  {
+    "user_id": "user-00072",
+    "user_segment": "New",
+    "signup_date": "2024-03-27",
+    "total_purchases": 2,
+    "total_spent": 51.55,
+    "favorite_categories": "[\"코미디\", \"SF\"]"
+  },
+  {
+    "user_id": "user-00073",
+    "user_segment": "New",
+    "signup_date": "2025-11-19",
+    "total_purchases": 2,
+    "total_spent": 22.46,
+    "favorite_categories": "[\"드라마\"]"
+  },
+  {
+    "user_id": "user-00074",
+    "user_segment": "New",
+    "signup_date": "2024-01-26",
+    "total_purchases": 0,
+    "total_spent": 24.48,
+    "favorite_categories": "[\"범죄\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00075",
+    "user_segment": "New",
+    "signup_date": "2025-04-11",
+    "total_purchases": 3,
+    "total_spent": 88.61,
+    "favorite_categories": "[\"역사\"]"
+  },
+  {
+    "user_id": "user-00076",
+    "user_segment": "New",
+    "signup_date": "2025-12-14",
+    "total_purchases": 3,
+    "total_spent": 49.44,
+    "favorite_categories": "[\"드라마\"]"
+  },
+  {
+    "user_id": "user-00077",
+    "user_segment": "New",
+    "signup_date": "2025-11-02",
+    "total_purchases": 5,
+    "total_spent": 0.55,
+    "favorite_categories": "[\"스릴러\"]"
+  },
+  {
+    "user_id": "user-00078",
+    "user_segment": "New",
+    "signup_date": "2024-08-12",
+    "total_purchases": 1,
+    "total_spent": 80.41,
+    "favorite_categories": "[\"액션\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00079",
+    "user_segment": "New",
+    "signup_date": "2024-09-12",
+    "total_purchases": 0,
+    "total_spent": 45.65,
+    "favorite_categories": "[\"자연\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00080",
+    "user_segment": "New",
+    "signup_date": "2025-07-26",
+    "total_purchases": 4,
+    "total_spent": 31.73,
+    "favorite_categories": "[\"범죄\", \"애니메이션\"]"
+  },
+  {
+    "user_id": "user-00081",
+    "user_segment": "New",
+    "signup_date": "2025-03-12",
+    "total_purchases": 4,
+    "total_spent": 44.59,
+    "favorite_categories": "[\"역사\"]"
+  },
+  {
+    "user_id": "user-00082",
+    "user_segment": "New",
+    "signup_date": "2025-05-01",
+    "total_purchases": 3,
+    "total_spent": 25.92,
+    "favorite_categories": "[\"자연\"]"
+  },
+  {
+    "user_id": "user-00083",
+    "user_segment": "New",
+    "signup_date": "2024-10-10",
+    "total_purchases": 4,
+    "total_spent": 48.46,
+    "favorite_categories": "[\"공포\"]"
+  },
+  {
+    "user_id": "user-00084",
+    "user_segment": "New",
+    "signup_date": "2025-03-26",
+    "total_purchases": 0,
+    "total_spent": 71.35,
+    "favorite_categories": "[\"공포\"]"
+  },
+  {
+    "user_id": "user-00085",
+    "user_segment": "New",
+    "signup_date": "2024-12-09",
+    "total_purchases": 2,
+    "total_spent": 89.3,
+    "favorite_categories": "[\"드라마\"]"
+  },
+  {
+    "user_id": "user-00086",
+    "user_segment": "New",
+    "signup_date": "2024-06-03",
+    "total_purchases": 1,
+    "total_spent": 38.3,
+    "favorite_categories": "[\"역사\"]"
+  },
+  {
+    "user_id": "user-00087",
+    "user_segment": "New",
+    "signup_date": "2024-08-07",
+    "total_purchases": 0,
+    "total_spent": 41.49,
+    "favorite_categories": "[\"애니메이션\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00088",
+    "user_segment": "New",
+    "signup_date": "2025-03-01",
+    "total_purchases": 0,
+    "total_spent": 20.68,
+    "favorite_categories": "[\"스릴러\", \"범죄\"]"
+  },
+  {
+    "user_id": "user-00089",
+    "user_segment": "New",
+    "signup_date": "2025-12-13",
+    "total_purchases": 0,
+    "total_spent": 85.67,
+    "favorite_categories": "[\"판타지\", \"액션\"]"
+  },
+  {
+    "user_id": "user-00090",
+    "user_segment": "New",
+    "signup_date": "2024-12-26",
+    "total_purchases": 2,
+    "total_spent": 75.35,
+    "favorite_categories": "[\"애니메이션\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00091",
+    "user_segment": "New",
+    "signup_date": "2025-09-09",
+    "total_purchases": 1,
+    "total_spent": 48.82,
+    "favorite_categories": "[\"스릴러\", \"판타지\"]"
+  },
+  {
+    "user_id": "user-00092",
+    "user_segment": "New",
+    "signup_date": "2024-01-30",
+    "total_purchases": 3,
+    "total_spent": 33.61,
+    "favorite_categories": "[\"역사\", \"드라마\"]"
+  },
+  {
+    "user_id": "user-00093",
+    "user_segment": "New",
+    "signup_date": "2025-04-23",
+    "total_purchases": 1,
+    "total_spent": 98.07,
+    "favorite_categories": "[\"스릴러\"]"
+  },
+  {
+    "user_id": "user-00094",
+    "user_segment": "New",
+    "signup_date": "2025-08-29",
+    "total_purchases": 4,
+    "total_spent": 66.3,
+    "favorite_categories": "[\"자연\"]"
+  },
+  {
+    "user_id": "user-00095",
+    "user_segment": "New",
+    "signup_date": "2025-03-14",
+    "total_purchases": 1,
+    "total_spent": 86.69,
+    "favorite_categories": "[\"액션\"]"
+  },
+  {
+    "user_id": "user-00096",
+    "user_segment": "New",
+    "signup_date": "2024-09-23",
+    "total_purchases": 3,
+    "total_spent": 32.74,
+    "favorite_categories": "[\"로맨스\", \"역사\"]"
+  },
+  {
+    "user_id": "user-00097",
+    "user_segment": "New",
+    "signup_date": "2025-01-23",
+    "total_purchases": 2,
+    "total_spent": 75.2,
+    "favorite_categories": "[\"공포\", \"코미디\"]"
+  },
+  {
+    "user_id": "user-00098",
+    "user_segment": "New",
+    "signup_date": "2025-04-26",
+    "total_purchases": 0,
+    "total_spent": 74.9,
+    "favorite_categories": "[\"로맨스\"]"
+  },
+  {
+    "user_id": "user-00099",
+    "user_segment": "New",
+    "signup_date": "2024-08-17",
+    "total_purchases": 5,
+    "total_spent": 6.86,
+    "favorite_categories": "[\"액션\"]"
+  },
+  {
+    "user_id": "user-00100",
+    "user_segment": "New",
+    "signup_date": "2024-09-10",
+    "total_purchases": 1,
+    "total_spent": 83.92,
+    "favorite_categories": "[\"SF\"]"
+  }
+]
