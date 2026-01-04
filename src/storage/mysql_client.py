@@ -265,6 +265,100 @@ class MySQLClient:
             logger.error(f"❌ 테이블 정보 조회 실패: {e}")
             return []
     
+    def batch_insert_user_events(self, events: List[Dict[str, Any]]) -> int:
+        """
+        user_events 테이블에 이벤트 배치 삽입
+        
+        Args:
+            events: 삽입할 이벤트 리스트
+            
+        Returns:
+            삽입된 행의 수
+            
+        Raises:
+            Exception: 배치 삽입 실패 시
+        """
+        if not events:
+            return 0
+        
+        try:
+            query = """
+                INSERT INTO user_events (
+                    user_id,
+                    session_id,
+                    event_type,
+                    content_id,
+                    watched_minutes,
+                    timestamp,
+                    metadata
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """
+            
+            # 이벤트를 튜플 리스트로 변환
+            import json
+            from datetime import datetime
+            
+            values = []
+            for event in events:
+                # timestamp를 datetime 객체로 변환
+                timestamp_str = event.get("timestamp", "")
+                try:
+                    # ISO 8601 형식 파싱 (Z를 +00:00으로 변환)
+                    timestamp_str = timestamp_str.replace("Z", "+00:00")
+                    timestamp = datetime.fromisoformat(timestamp_str)
+                except Exception:
+                    # 파싱 실패 시 현재 시각 사용
+                    timestamp = datetime.now()
+                
+                # metadata를 JSON 문자열로 변환
+                metadata = event.get("metadata", {})
+                metadata_json = json.dumps(metadata, ensure_ascii=False)
+                
+                values.append((
+                    event.get("user_id", ""),
+                    event.get("session_id", ""),
+                    event.get("event_type", ""),
+                    event.get("content_id", ""),
+                    event.get("watched_minutes", 0),
+                    timestamp,
+                    metadata_json,
+                ))
+            
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.executemany(query, values)
+                conn.commit()
+                affected_rows = cursor.rowcount
+                cursor.close()
+                
+                logger.info(f"✅ 배치 삽입 성공: {affected_rows}건")
+                return affected_rows
+                
+        except Error as e:
+            logger.error(f"❌ 배치 삽입 실패: {e}")
+            raise
+        except Exception as e:
+            logger.error(f"❌ 배치 삽입 중 예상치 못한 오류: {e}")
+            raise
+    
+    def connect(self) -> None:
+        """
+        명시적 연결 메서드 (Consumer에서 호출)
+        
+        실제로는 Connection Pool이 이미 초기화되어 있으므로
+        연결 테스트만 수행합니다.
+        """
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                cursor.execute("SELECT 1")
+                result = cursor.fetchall()  # 결과 읽기
+                cursor.close()
+                logger.info("✅ MySQL 연결 테스트 성공")
+        except Exception as e:
+            logger.error(f"❌ MySQL 연결 테스트 실패: {e}")
+            raise
+    
     def close(self) -> None:
         """
         Connection Pool 종료

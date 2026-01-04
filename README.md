@@ -90,7 +90,6 @@
 - `pyspark`: 스트림 처리 및 세션 추적
 - `kafka-python`: Kafka 클라이언트
 - `mysql-connector-python`: MySQL 연결
-- `redis-py`: Redis 캐싱
 - `scikit-learn`: 협업 필터링 알고리즘
 - `prometheus-client`: 메트릭 노출
 - `fastapi`: REST API
@@ -104,7 +103,6 @@
 2. **외부 서비스 접근 권한**:
    - Kafka Cluster: `192.168.150.115:9092,192.168.150.120:9092,192.168.150.125:9092`
    - MySQL Server: `192.168.150.110:3306`
-   - Redis Server: `192.168.150.110:6379`
    - Prometheus Server: `192.168.150.110:19090`
 
 ### 설치 방법
@@ -188,7 +186,7 @@ python scripts/generate_sample_data.py
 python tests/test_connections.py
 ```
 
-모든 외부 서비스(Kafka, MySQL, Redis, Prometheus)와 PySpark 로컬 세션 연결을 확인합니다.
+모든 외부 서비스(Kafka, MySQL, Prometheus)와 PySpark 로컬 세션 연결을 확인합니다.
 
 #### 6. 데이터베이스 스키마 생성
 
@@ -208,8 +206,40 @@ python scripts/generate_sample_data.py
 
 ### 실행 방법
 
+#### Kafka Producer 실행 (이벤트 생성)
+
 ```bash
-# API 서버 시작 (개발 중)
+# 100개 이벤트 생성
+python src/kafka/producer.py --events 100
+
+# 무한 이벤트 생성 (Ctrl+C로 종료)
+python src/kafka/producer.py
+
+# 드라이런 (Kafka 전송 없이 테스트)
+python src/kafka/producer.py --dry-run --events 10
+```
+
+#### Kafka Consumer 실행 (실시간 수집)
+
+```bash
+# 기본 실행 (배치 크기 100, 타임아웃 5초)
+python src/kafka/consumer.py
+
+# 배치 크기 및 타임아웃 조정
+python src/kafka/consumer.py --batch-size 50 --batch-timeout 10
+
+# 디버그 모드
+python src/kafka/consumer.py --log-level DEBUG
+```
+
+**Consumer 동작 방식:**
+```
+[Kafka] → [Parser] → [Batch Buffer (100)] → [MySQL] → [Offset Commit]
+```
+
+#### API 서버 시작 (개발 중)
+
+```bash
 python src/main.py
 ```
 
@@ -239,8 +269,8 @@ recommendation-system/
 │   └── prometheus_config.py      # Prometheus 설정
 ├── src/                          # 소스 코드
 │   ├── kafka/
-│   │   ├── producer.py           # (예정) 이벤트 시뮬레이터
-│   │   └── consumer.py           # (예정) Kafka 소비자
+│   │   ├── producer.py           # ✅ 이벤트 시뮬레이터
+│   │   └── consumer.py           # ✅ Kafka Consumer (실시간 수집)
 │   ├── spark/
 │   │   └── streaming.py          # (예정) PySpark 스트리밍
 │   ├── recommendation/
@@ -249,18 +279,19 @@ recommendation-system/
 │   │   └── ab_test.py            # (예정) A/B 테스트
 │   ├── storage/
 │   │   ├── mysql_client.py       # ✅ MySQL 클라이언트
-│   │   ├── migrations.py         # ✅ DB 마이그레이션
-│   │   └── redis_client.py       # (예정) Redis 클라이언트
+│   │   └── migrations.py         # ✅ DB 마이그레이션
 │   ├── metrics/
 │   │   └── prometheus_exporter.py # (예정) Prometheus
 │   ├── api/
 │   │   └── rest_api.py           # (예정) REST API
 │   └── main.py                   # (예정) 메인 실행
 ├── scripts/                      # 실행 스크립트
-│   └── run_migrations.py         # ✅ DB 마이그레이션 실행
+│   ├── run_migrations.py         # ✅ DB 마이그레이션 실행
+│   └── generate_sample_data.py   # ✅ 샘플 데이터 생성
 ├── tests/                        # 테스트 코드
-│   ├── test_connections.py       # 연결 테스트
-│   └── test_db_schema.py         # ✅ DB 스키마 테스트
+│   ├── test_connections.py       # ✅ 연결 테스트
+│   ├── test_db_schema.py         # ✅ DB 스키마 테스트
+│   └── test_kafka_consumer.py    # ✅ Kafka Consumer 테스트
 ├── ui/                           # 웹 UI
 │   ├── index.html                # (예정) 메인 페이지
 │   ├── css/
@@ -299,6 +330,8 @@ MYSQL_POOL_SIZE=5
 
 #### Redis 설정
 
+**Note:** Redis는 추후 추천 결과 캐싱용으로 사용 예정입니다.
+
 ```bash
 REDIS_HOST=your_redis_host
 REDIS_PORT=6379
@@ -327,17 +360,15 @@ SPARK_LOG_LEVEL=WARN
 ### 설정 클래스 사용 방법
 
 ```python
-from config import get_mysql_config, get_kafka_config, get_redis_config
+from config import get_mysql_config, get_kafka_config
 
 # 설정 로드 (자동 검증)
 mysql_config = get_mysql_config()
 kafka_config = get_kafka_config()
-redis_config = get_redis_config()
 
 # 설정 사용
 print(mysql_config.host)  # 192.168.150.110
 servers = kafka_config.get_bootstrap_servers_list()
-redis_url = redis_config.get_redis_url()
 ```
 
 ## 👨‍💻 개발 가이드
@@ -373,11 +404,14 @@ logger.error("에러 발생", exc_info=True)
 ### 테스트 실행
 
 ```bash
-# 연결 테스트 (Kafka, MySQL, Redis, Prometheus)
+# 연결 테스트 (Kafka, MySQL, Prometheus)
 python tests/test_connections.py
 
 # 데이터베이스 스키마 테스트 (11개 테스트)
 python tests/test_db_schema.py
+
+# Kafka Consumer 테스트 (12개 테스트)
+pytest tests/test_kafka_consumer.py -v
 
 # 모든 테스트 실행 (pytest)
 pytest
@@ -433,39 +467,67 @@ python scripts/generate_sample_data.py --users 50 --movies 300
   - **생성 완료**: 사용자 100명, 콘텐츠 1,000개 (영화 600, 드라마 300, 다큐 100)
   - JSON 백업 파일: `data/users.json`, `data/contents.json`
 
+- [x] **Task 004: Kafka Producer 구현** (2026-01-01)
+  - 이벤트 시뮬레이터 구현 (`src/kafka/producer.py`)
+  - 5가지 이벤트 타입 생성 (click, watch, watchlist, watch_complete, rating)
+  - 사용자별 세션 추적 및 현실적인 이벤트 분포
+  - CLI 인터페이스 및 드라이런 모드
+  - **Producer 가이드**: [src/kafka/producer.py](src/kafka/producer.py) 참조
+
+- [x] **Task 005: Kafka Consumer를 통한 실시간 이벤트 수집 구현** (2026-01-03)
+  - **Kafka Consumer 구현** (`src/kafka/consumer.py`)
+    - 실시간 이벤트 수신 및 파싱
+    - 배치 저장 (100개 단위)
+    - 수동 오프셋 커밋 (이벤트 손실 방지)
+    - 우아한 종료 (Graceful Shutdown)
+    - Dead Letter Queue 지원
+    - CLI 인터페이스
+  - **MySQL Client 확장**
+    - 배치 삽입 메서드 추가
+  - **단위 테스트** (`tests/test_kafka_consumer.py`)
+    - 12개 테스트 케이스 작성
+  - **작업 문서**: [ai_docs/tasks/005_kafka_consumer_realtime_event_collection.md](ai_docs/tasks/005_kafka_consumer_realtime_event_collection.md)
+
 ### 🚧 진행 중인 작업
 
-- [ ] Task 004: Kafka Producer 구현 (이벤트 시뮬레이터)
-- [ ] Task 005: Kafka Consumer 및 PySpark 스트리밍 구현
-- [ ] Task 006: Redis 클라이언트 및 추천 알고리즘 구현
-- [ ] Task 007: REST API 구현
-- [ ] Task 008: 웹 UI 개발
+- [ ] Task 006: PySpark 스트리밍 구현 (세션 추적)
+- [ ] Task 007: 추천 알고리즘 구현 (협업 필터링)
+- [ ] Task 008: REST API 구현
+- [ ] Task 009: 웹 UI 개발
 
 ## 🎨 주요 기능 상세
 
-### 1. 실시간 이벤트 수집
+### 1. 실시간 이벤트 수집 ✅
 
-- Kafka로부터 초당 5,000건 이상의 이벤트 수집
-- 이벤트 타입: 클릭, 시청, 시청 완료, 평가, 찜하기
+- **Kafka Producer**: 현실적인 사용자 행동 이벤트 시뮬레이션
+  - 5가지 이벤트 타입 (click, watch, watchlist, watch_complete, rating)
+  - 사용자별 세션 추적 및 컨텍스트 기반 이벤트 생성
+  - VIP 사용자 가중치 반영
 
-### 2. 세션 추적
+- **Kafka Consumer**: 실시간 이벤트 수집 및 저장
+  - 초당 1,000건 이상 이벤트 처리
+  - 배치 저장 (100개 단위) 최적화
+  - 수동 오프셋 커밋 (이벤트 손실 방지)
+  - Dead Letter Queue 지원
+
+### 2. 세션 추적 (예정)
 
 - 3분 윈도우 기반 사용자 세션 자동 추적
 - 세션 내 이벤트 집계 및 패턴 분석
 
-### 3. 개인화 추천
+### 3. 개인화 추천 (예정)
 
 - **협업 필터링**: 유사 사용자 기반 추천
 - **세션 기반**: 현재 세션 패턴 기반 실시간 추천
 - **A/B 테스트**: 다중 알고리즘 성능 비교
 
-### 4. 고속 캐싱
+### 4. 고속 캐싱 (예정)
 
-- Redis TTL 10분 설정으로 추천 결과 캐싱
-- 응답 시간 100ms 이하 달성
+- 추천 결과 캐싱용 Redis 구현 예정
+- Connection Pool 기반 성능 최적화
 - Redis 장애 시 MySQL Fallback
 
-### 5. 실시간 모니터링
+### 5. 실시간 모니터링 (예정)
 
 - Prometheus 메트릭 노출
 - 15개 이상의 핵심 지표 추적
@@ -485,11 +547,13 @@ python scripts/generate_sample_data.py --users 50 --movies 300
 
 ---
 
-**Last Updated**: 2026-01-01  
-**Version**: 0.3.0 (MVP - Data Ready)  
+**Last Updated**: 2026-01-04  
+**Version**: 0.4.0 (MVP - Event Pipeline Ready)  
 **Status**: 
 - ✅ Database Schema (7 tables)
 - ✅ Sample Data (100 users, 1,000 contents)
-- 🚧 Event Streaming (Kafka + PySpark)
+- ✅ Kafka Producer (Event Simulator)
+- ✅ Kafka Consumer (Real-time Collection)
+- 🚧 PySpark Streaming (Session Tracking)
 
 **Project**: Real-Time User Behavior Analysis & Personalized Recommendation System
