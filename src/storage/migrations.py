@@ -137,7 +137,8 @@ class DatabaseMigration:
             
             create_table_sql = """
             CREATE TABLE IF NOT EXISTS user_events (
-                id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '이벤트 고유 ID',
+                id BIGINT AUTO_INCREMENT PRIMARY KEY COMMENT '레코드 고유 ID (auto_increment)',
+                event_id VARCHAR(100) NOT NULL UNIQUE COMMENT '이벤트 고유 ID (Kafka 메시지의 event_id)',
                 user_id VARCHAR(50) NOT NULL COMMENT '사용자 ID (FK: user_profiles)',
                 session_id VARCHAR(100) COMMENT '세션 ID (3분 윈도우)',
                 event_type ENUM('click', 'watch', 'watchlist', 'watch_complete', 'rating') NOT NULL COMMENT '이벤트 타입',
@@ -148,7 +149,8 @@ class DatabaseMigration:
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
                 INDEX idx_user_timestamp (user_id, timestamp),
                 INDEX idx_content (content_id),
-                INDEX idx_session (session_id)
+                INDEX idx_session (session_id),
+                INDEX idx_event_id (event_id)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
             COMMENT='사용자 행동 이벤트 히스토리 - Kafka로부터 수집된 실시간 이벤트'
             """
@@ -159,6 +161,46 @@ class DatabaseMigration:
             
         except Exception as e:
             logger.error(f"❌ 테이블 '{table_name}' 생성 실패: {e}")
+            return False
+    
+    def add_event_id_column_to_user_events(self) -> bool:
+        """
+        user_events 테이블에 event_id 컬럼 추가 (기존 테이블 마이그레이션)
+        
+        Returns:
+            성공 여부
+        """
+        table_name = "user_events"
+        
+        if not self.client.table_exists(table_name):
+            logger.warning(f"⚠️  테이블 '{table_name}'이(가) 존재하지 않습니다. 스키마 생성 시 자동으로 포함됩니다.")
+            return True
+        
+        try:
+            # event_id 컬럼이 이미 존재하는지 확인
+            columns = self.client.get_table_info(table_name)
+            column_names = [col['Field'] for col in columns]
+            
+            if 'event_id' in column_names:
+                logger.info(f"✅ 테이블 '{table_name}'에 'event_id' 컬럼이 이미 존재합니다.")
+                return True
+            
+            logger.info(f"📝 테이블 '{table_name}'에 'event_id' 컬럼 추가 중...")
+            
+            # event_id 컬럼 추가 (id 다음에)
+            alter_table_sql = """
+            ALTER TABLE user_events 
+            ADD COLUMN event_id VARCHAR(100) NOT NULL UNIQUE COMMENT '이벤트 고유 ID (Kafka 메시지의 event_id)' 
+            AFTER id,
+            ADD INDEX idx_event_id (event_id)
+            """
+            
+            self.client.execute_query(alter_table_sql)
+            logger.info(f"✅ 테이블 '{table_name}'에 'event_id' 컬럼 추가 완료")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ 테이블 '{table_name}'에 'event_id' 컬럼 추가 실패: {e}")
             return False
     
     def create_user_sessions_table(self) -> bool:
@@ -189,7 +231,7 @@ class DatabaseMigration:
                 browsed_contents JSON COMMENT '탐색한 콘텐츠 목록 (JSON 배열)',
                 watched_contents JSON COMMENT '시청한 콘텐츠 목록 (JSON 배열)',
                 completed_contents JSON COMMENT '완료한 콘텐츠 목록 (JSON 배열)',
-                total_watch_minutes INT DEFAULT 0 COMMENT '총 시청 시간 (분)',
+                total_watched_minutes INT DEFAULT 0 COMMENT '총 시청 시간 (분)',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '레코드 생성 시간',
                 updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '레코드 수정 시간',
                 INDEX idx_user_start (user_id, start_time)
@@ -359,6 +401,9 @@ class DatabaseMigration:
         
         # 3. user_events 테이블
         results['user_events'] = self.create_user_events_table()
+        
+        # 3-1. user_events 테이블에 event_id 컬럼 추가 (기존 테이블 마이그레이션)
+        results['user_events_event_id'] = self.add_event_id_column_to_user_events()
         
         # 4. user_sessions 테이블
         results['user_sessions'] = self.create_user_sessions_table()

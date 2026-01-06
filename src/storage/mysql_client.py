@@ -284,6 +284,7 @@ class MySQLClient:
         try:
             query = """
                 INSERT INTO user_events (
+                    event_id,
                     user_id,
                     session_id,
                     event_type,
@@ -291,7 +292,7 @@ class MySQLClient:
                     watched_minutes,
                     timestamp,
                     metadata
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             """
             
             # 이벤트를 튜플 리스트로 변환
@@ -300,6 +301,12 @@ class MySQLClient:
             
             values = []
             for event in events:
+                # event_id 필수 체크
+                event_id = event.get("event_id", "")
+                if not event_id:
+                    logger.warning("Event missing event_id, skipping: %s", event)
+                    continue
+                
                 # timestamp를 datetime 객체로 변환
                 timestamp_str = event.get("timestamp", "")
                 try:
@@ -315,6 +322,7 @@ class MySQLClient:
                 metadata_json = json.dumps(metadata, ensure_ascii=False)
                 
                 values.append((
+                    event_id,
                     event.get("user_id", ""),
                     event.get("session_id", ""),
                     event.get("event_type", ""),

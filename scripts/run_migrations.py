@@ -96,6 +96,9 @@ def main():
             logger.info("")
             logger.info("생성된 테이블 목록:")
             for table_name in results.keys():
+                # 마이그레이션 작업은 테이블이 아니므로 건너뛰기
+                if table_name not in verification['tables']:
+                    continue
                 columns = verification['tables'][table_name]['columns']
                 logger.info(f"  ✅ {table_name} ({len(columns)}개 컬럼)")
             
