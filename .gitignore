@@ -57,6 +57,9 @@ logs/
 kafka-data/
 zookeeper-data/
 
+# Spark checkpoints
+data/checkpoints/
+
 # Test coverage
 .coverage
 htmlcov/

@@ -237,6 +237,146 @@ python src/kafka/consumer.py --log-level DEBUG
 [Kafka] → [Parser] → [Batch Buffer (100)] → [MySQL] → [Offset Commit]
 ```
 
+#### PySpark Streaming 실행 (실시간 스트림 처리)
+
+```bash
+# 기본 실행 (체크포인트: data/checkpoints/streaming/)
+python src/spark/streaming.py
+
+# 체크포인트 디렉토리 지정
+python src/spark/streaming.py --checkpoint-dir data/checkpoints/streaming/
+
+# 토픽 및 Consumer Group 지정
+python src/spark/streaming.py --topic user-events-topic --consumer-group spark-streaming-group
+
+# 디버그 모드
+python src/spark/streaming.py --log-level DEBUG
+```
+
+**PySpark Streaming 동작 방식:**
+```
+[Kafka] → [Spark Streaming] → [JSON 파싱] → [타임스탬프 변환] → [3분 윈도우] → [세션 집계] → [MySQL 저장]
+         (3초 배치 간격)      (StructType)   (ISO 8601)      (Watermark 10분)  (집계)      (user_sessions)
+```
+
+**주의사항:**
+- PySpark는 Java가 설치되어 있어야 합니다 (Java 8 이상 권장)
+- Windows 환경에서는 `JAVA_HOME` 환경 변수가 설정되어 있어야 합니다
+- 체크포인트 디렉토리는 자동으로 생성됩니다
+- Spark Structured Streaming은 체크포인트를 통해 오프셋을 자동 관리합니다 (Consumer Group 미사용)
+- Starting Offset은 체크포인트가 없으면 `earliest`, 있으면 `latest`로 자동 설정됩니다
+- Windows 환경에서 Python Worker 연결 문제를 방지하기 위해 추가 설정이 포함되어 있습니다:
+  - `spark.python.worker.reuse=false`: Worker 재사용 비활성화
+  - `spark.python.use.daemon=false`: Daemon 비활성화
+  - `spark.pyspark.python`: 현재 Python 인터프리터 경로 명시
+
+**세션 추적 기능:**
+- 3분 윈도우로 세션 그룹화
+- Watermark 10분 설정 (지연 데이터 처리)
+- 세션별 집계: event_count, total_watched_minutes, browsed_contents, watched_contents, completed_contents
+- MySQL `user_sessions` 테이블에 자동 저장
+- Windows 환경 Python Worker 연결 문제 해결 (to_json() Spark SQL 함수 사용)
+
+#### 세션 추적 테스트 (3개 터미널)
+
+**전체 데이터 흐름:**
+```
+[Kafka Topic: user-events-topic]
+    │
+    ├─────────────────────────┬─────────────────────────┐
+    │                         │                         │
+    ↓                         ↓                         ↓
+[Consumer 1]            [Consumer 2]            [Kafka Broker]
+(Python)                (PySpark)               (__consumer_offsets)
+group:                  group:                  ├─ recommendation-engine-group
+recommendation-         spark-streaming-           └─ offset: 1500
+engine-group            group                   └─ spark-streaming-group
+    │                         │                      └─ offset: 1200
+    ↓                         ↓
+[MySQL                  [Checkpoint]
+user_events]            data/checkpoints/
+    │                   ├─ offsets/
+    │                   ├─ state/
+    │                   └─ commits/
+    │                         │
+    │                         ↓
+    │                   [세션 집계]
+    │                   (3분 윈도우)
+    │                         │
+    │                         ↓
+    └─────────────────→ [MySQL user_sessions]
+```
+
+**테스트 시나리오:**
+
+```bash
+# 터미널 1: Kafka Producer 시작
+python src/kafka/producer.py
+# → 초당 10-50개 이벤트 생성 중...
+
+# 터미널 2: Kafka Consumer 시작 (빠른 저장)
+python src/kafka/consumer.py
+# → Consumer Group: recommendation-engine-group
+# → MySQL user_events 테이블에 저장
+# → 빠른 처리 (500ms에 100개)
+
+# 터미널 3: PySpark Streaming 시작 (세션 집계)
+python src/spark/streaming.py
+# → Consumer Group: spark-streaming-group
+# → Kafka 구독 시작...
+# → Checkpoint 초기화...
+# → 3분 윈도우 세션 추적 시작
+# → MySQL user_sessions 테이블에 저장
+# → 느린 처리 (3초 배치 간격)
+```
+
+**동작 방식:**
+- **Consumer 1 (Python)**: 빠른 저장 (recommendation-engine-group)
+  - 목적: 빠른 이벤트 저장
+  - 처리 속도: ~500ms에 100개
+  - 저장 위치: MySQL `user_events` 테이블
+  
+- **Consumer 2 (PySpark)**: 세션 집계 (spark-streaming-group)
+  - 목적: 복잡한 세션 집계
+  - 처리 속도: 3초 배치 간격
+  - 저장 위치: MySQL `user_sessions` 테이블
+  - 세션 집계: 3분 윈도우로 그룹화
+
+**Offset 독립 관리:**
+- 각 Consumer Group은 독립적인 offset을 관리합니다
+- Kafka Broker의 `__consumer_offsets` 토픽에 별도로 저장됩니다
+- 서로 충돌 없이 동시 실행 가능합니다
+
+**세션 집계 결과 확인:**
+```sql
+-- MySQL에서 세션 집계 결과 확인
+SELECT 
+    session_id,
+    user_id,
+    event_count,
+    total_watch_minutes,
+    browsed_contents,
+    watched_contents,
+    completed_contents,
+    start_time,
+    end_time
+FROM user_sessions
+ORDER BY start_time DESC
+LIMIT 10;
+```
+
+**장애 복구 테스트:**
+```bash
+# PySpark 중단 (Ctrl+C)
+# → Checkpoint에 상태 저장됨
+
+# PySpark 재시작
+python src/spark/streaming.py
+# → Checkpoint에서 복구
+# → 이전 offset부터 재개
+# → 윈도우 상태 복원
+```
+
 #### API 서버 시작 (개발 중)
 
 ```bash
@@ -259,7 +399,11 @@ recommendation-system/
 │   └── tasks/
 │       ├── 001_setup_configuration_files.md        # ✅ 완료
 │       ├── 002_mysql_database_schema_creation.md   # ✅ 완료
-│       └── 003_sample_data_generation.md           # ✅ 완료
+│       ├── 003_sample_data_generation.md           # ✅ 완료
+│       ├── 004_kafka_producer_event_simulator.md   # ✅ 완료
+│       ├── 005_kafka_consumer_realtime_event_collection.md  # ✅ 완료
+│       ├── 006_pyspark_streaming_basic_setup.md    # ✅ 완료
+│       └── 007_pyspark_session_tracking.md         # ✅ 완료
 ├── config/                       # 설정 모듈
 │   ├── __init__.py               # dotenv 자동 로드
 │   ├── kafka_config.py           # Kafka 설정
@@ -272,7 +416,7 @@ recommendation-system/
 │   │   ├── producer.py           # ✅ 이벤트 시뮬레이터
 │   │   └── consumer.py           # ✅ Kafka Consumer (실시간 수집)
 │   ├── spark/
-│   │   └── streaming.py          # (예정) PySpark 스트리밍
+│   │   └── streaming.py          # ✅ PySpark 스트리밍 (세션 추적)
 │   ├── recommendation/
 │   │   ├── collaborative_filtering.py   # (예정) 협업 필터링
 │   │   ├── session_based.py      # (예정) 세션 기반 추천
@@ -291,7 +435,9 @@ recommendation-system/
 ├── tests/                        # 테스트 코드
 │   ├── test_connections.py       # ✅ 연결 테스트
 │   ├── test_db_schema.py         # ✅ DB 스키마 테스트
-│   └── test_kafka_consumer.py    # ✅ Kafka Consumer 테스트
+│   ├── test_kafka_consumer.py    # ✅ Kafka Consumer 단위 테스트
+│   ├── test_kafka_consumer_integration.py  # ✅ Kafka Consumer 통합 테스트
+│   └── test_spark_streaming_integration.py  # ✅ PySpark Streaming 통합 테스트
 ├── ui/                           # 웹 UI
 │   ├── index.html                # (예정) 메인 페이지
 │   ├── css/
@@ -410,11 +556,20 @@ python tests/test_connections.py
 # 데이터베이스 스키마 테스트 (11개 테스트)
 python tests/test_db_schema.py
 
-# Kafka Consumer 테스트 (12개 테스트)
+# Kafka Consumer 단위 테스트 (12개 테스트)
 pytest tests/test_kafka_consumer.py -v
+
+# Kafka Consumer 통합 테스트 (실제 Kafka, MySQL 사용)
+pytest tests/test_kafka_consumer_integration.py -v -m integration
+
+# PySpark Streaming 통합 테스트 (실제 Kafka, MySQL, Spark 사용)
+pytest tests/test_spark_streaming_integration.py -v -m integration -m spark
 
 # 모든 테스트 실행 (pytest)
 pytest
+
+# 통합 테스트만 실행
+pytest -m integration -v
 
 # 특정 파일 테스트
 pytest tests/test_connections.py
@@ -422,6 +577,25 @@ pytest tests/test_connections.py
 # 커버리지 리포트
 pytest --cov=src --cov-report=html
 ```
+
+**통합 테스트 시나리오:**
+
+1. **Kafka Consumer 통합 테스트** (`test_kafka_consumer_integration.py`):
+   - 초기 5건 이벤트 전송 → Consumer 실행 → MySQL 저장 확인
+   - 2초 간격으로 추가 5건 전송 → 저장 확인
+   - 배치 타임아웃 테스트
+   - 다중 세션 테스트
+
+2. **PySpark Streaming 통합 테스트** (`test_spark_streaming_integration.py`):
+   - 초기 5건 이벤트 전송 → PySpark 실행 → 세션 집계 확인
+   - 2초 간격으로 추가 5건 전송 → 세션 집계 확인
+   - 다중 세션 집계 테스트
+   - 세션 집계 필드 검증 (event_count, total_watch_minutes, browsed_contents 등)
+
+**주의사항:**
+- 통합 테스트는 실제 Kafka, MySQL, Spark가 실행 중이어야 합니다
+- PySpark 테스트는 Java가 설치되어 있어야 합니다
+- 통합 테스트 실행 시간이 오래 걸릴 수 있습니다 (3초 배치 간격)
 
 ### 데이터베이스 관리
 
@@ -488,9 +662,39 @@ python scripts/generate_sample_data.py --users 50 --movies 300
     - 12개 테스트 케이스 작성
   - **작업 문서**: [ai_docs/tasks/005_kafka_consumer_realtime_event_collection.md](ai_docs/tasks/005_kafka_consumer_realtime_event_collection.md)
 
+- [x] **Task 006: PySpark Streaming 기본 설정 및 Kafka 연동** (2026-01-04)
+  - **PySpark Streaming 구현** (`src/spark/streaming.py`)
+    - Spark 세션 초기화 (.env 설정 사용)
+    - Kafka 소스 연결 (user-events-topic)
+    - JSON 파싱 및 스키마 검증 (StructType)
+    - 체크포인트 지원 (장애 복구)
+    - 3초 배치 간격 처리
+    - 콘솔 출력 (테스트용)
+    - 우아한 종료 (Graceful Shutdown)
+    - CLI 인터페이스
+  - **작업 문서**: [ai_docs/tasks/006_pyspark_streaming_basic_setup.md](ai_docs/tasks/006_pyspark_streaming_basic_setup.md)
+
+- [x] **Task 007: PySpark 3분 윈도우 기반 세션 추적 구현** (2026-01-06)
+  - **세션 추적 로직 구현** (`src/spark/streaming.py`)
+    - 3분 윈도우 세션 그룹화 (`window(col("timestamp"), "3 minutes")`)
+    - Watermark 10분 설정 (지연 데이터 처리)
+    - 세션 집계:
+      - event_count: 세션당 이벤트 수
+      - total_watched_minutes: 총 시청 시간
+      - browsed_contents: 클릭한 콘텐츠 목록 (collect_set)
+      - watched_contents: 실제 시청한 콘텐츠 목록
+      - completed_contents: 완료한 콘텐츠 목록
+      - start_time: 세션 시작 시간 (min)
+      - end_time: 세션 종료 시간 (max)
+    - MySQL 저장 (foreachBatch, JDBC)
+    - Windows Python Worker 연결 문제 해결 (to_json() Spark SQL 함수 사용, collect() 제거)
+    - 모니터링 로깅 (처리 세션 수, 지연 시간)
+  - **통합 테스트 완료**: MySQL 저장 성공 확인
+  - **작업 문서**: [ai_docs/tasks/007_pyspark_session_tracking.md](ai_docs/tasks/007_pyspark_session_tracking.md)
+
 ### 🚧 진행 중인 작업
 
-- [ ] Task 006: PySpark 스트리밍 구현 (세션 추적)
+- [ ] Task 008: 추천 알고리즘 구현 (협업 필터링)
 - [ ] Task 007: 추천 알고리즘 구현 (협업 필터링)
 - [ ] Task 008: REST API 구현
 - [ ] Task 009: 웹 UI 개발
@@ -547,13 +751,16 @@ python scripts/generate_sample_data.py --users 50 --movies 300
 
 ---
 
-**Last Updated**: 2026-01-04  
-**Version**: 0.4.0 (MVP - Event Pipeline Ready)  
+**Last Updated**: 2026-01-06  
+**Version**: 0.7.0 (MVP - Session Tracking Complete)  
 **Status**: 
 - ✅ Database Schema (7 tables)
 - ✅ Sample Data (100 users, 1,000 contents)
 - ✅ Kafka Producer (Event Simulator)
 - ✅ Kafka Consumer (Real-time Collection)
-- 🚧 PySpark Streaming (Session Tracking)
+- ✅ PySpark Streaming (Kafka 연동, 세션 추적)
+- ✅ Session Tracking (3분 윈도우, MySQL 저장, Windows 호환성 확보)
+- ✅ Integration Tests (Kafka Consumer, PySpark Streaming)
+- 🚧 Recommendation Algorithm (Collaborative Filtering)
 
 **Project**: Real-Time User Behavior Analysis & Personalized Recommendation System
